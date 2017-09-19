@@ -3,10 +3,11 @@ defmodule GossipSimulator.Mixfile do
 
   def project do
     [
-      app: :gossip_simulator,
+      app: :project2,
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
+      escript: [main_module: Project2],
       deps: deps()
     ]
   end
