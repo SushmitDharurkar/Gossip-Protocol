@@ -50,7 +50,7 @@ defmodule Project2 do
 
     :ets.new(:count, [:set, :public, :named_table])
     :ets.insert(:count, {"spread", 0})
-    # receiver = spawn(Project2, :heardRumor, [])
+    
     case topology do
       "full" -> 
             IO.puts "Using full topology"
@@ -85,7 +85,7 @@ defmodule Project2 do
   end
 
   def init_gossip_line(actors, neighbors, numNodes) do
-    # Connect actors in a line and start sending
+
     for  {k, v}  <-  neighbors  do
       Client.send_message(k, v)
     end
@@ -110,7 +110,6 @@ defmodule Project2 do
     [{_, spread}] = :ets.lookup(:count, "spread")
 
     if ((spread/numNodes) < 0.9) do
-      # IO.puts "Calling again"
       spread = init_gossip_full(actors, numNodes)
     end
     spread
