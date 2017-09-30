@@ -22,12 +22,4 @@ defmodule Client do
         {:ok, rumour} = GenServer.call(server, {:get_rumour, "rumour"})
         rumour
     end
-
-    def receive_main(server) do
-        receive do
-            msg -> 
-                receive_message(server, msg)
-        end
-        receive_main(server)
-    end
 end

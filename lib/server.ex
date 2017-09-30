@@ -8,19 +8,17 @@ defmodule Server do
     def handle_cast({:receive_message, rumour}, state) do
         {:ok, count} = Map.fetch(state, "count")
         state = Map.put(state, "count", count + 1)
-        {:ok, r} = Map.fetch(state, "rumour")
-        # IO.puts "In handle receive message. Rumour is " <> r
-        # IO.inspect self()
+
         if(rumour != "" && Map.fetch(state, "rumour") == rumour) do
             {:noreply, state}
         else
+            [{_, spread}] = :ets.lookup(:count, "spread")
+            :ets.insert(:count, {"spread", spread + 1})
             {:noreply, Map.put(state, "rumour", rumour)}
         end
     end
 
     def handle_cast({:send_message, actors}, state) do
-        # IO.puts "In handle send message"
-        # IO.inspect self()
         {:ok, rumour} = Map.fetch(state, "rumour")
         if (rumour != "") do
             _ = GenServer.cast(Enum.random(actors), {:receive_message, rumour})
