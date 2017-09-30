@@ -50,7 +50,7 @@ defmodule Project2 do
 
     :ets.new(:count, [:set, :public, :named_table])
     :ets.insert(:count, {"spread", 0})
-    
+
     case topology do
       "full" -> 
             IO.puts "Using full topology"
@@ -70,9 +70,8 @@ defmodule Project2 do
       "imp2D" ->
               IO.puts "Using imp2D topology"  
               neighbors = get_2d_neighbors(actors, topology) 
-              IO.inspect neighbors
               prev = System.monotonic_time(:milliseconds)
-              init_gossip_imp2d(actors)           
+              init_gossip_imp2d(actors, neighbors, numNodes)           
        _ ->
          IO.puts "Invalid topology"   
          IO.puts "Enter full/2D/line/imp2D"
@@ -81,6 +80,10 @@ defmodule Project2 do
   end
 
   def init_gossip_2d(actors, neighbors, numNodes) do
+    init_gossip_line(actors, neighbors, numNodes)
+  end
+
+  def init_gossip_imp2d(actors, neighbors, numNodes) do
     init_gossip_line(actors, neighbors, numNodes)
   end
 
@@ -98,9 +101,6 @@ defmodule Project2 do
       spread = init_gossip_line(actors, neighbors, numNodes)
     end
     spread
-  end
-
-  def init_gossip_imp2d(actors) do
   end
 
   def init_gossip_full(actors ,numNodes) do
@@ -161,11 +161,11 @@ defmodule Project2 do
                                                                 if (y < yLimit && (i + yMulti) < numNodes) do adjacents = Enum.into([i + yMulti], adjacents) end
                                                                 {:ok, actor} = Map.fetch(actors_with_index, i)
 
+                                                                # Add random neighbor
                                                                 case topology do
                                                                   "imp2D" -> adjacents = Enum.into([:rand.uniform(numNodes) - 1], adjacents) # :rand.uniform(n) gives random number: 1 <= x <= n
                                                                   _ ->
                                                                 end
-                                                                # Add random neighbor
 
                                                                 neighbor_pids = Enum.map(adjacents, fn x -> 
                                                                                                       {:ok, n} = Map.fetch(actors_with_index, x)
@@ -173,7 +173,9 @@ defmodule Project2 do
                                                                 Map.put(neighbors, actor, neighbor_pids) 
                                                               else
                                                                 Map.put(neighbors, "dummy", "dummy")
-                                                              end end) end)
+                                                              end 
+                                                            end) 
+                                                          end)
     Map.delete(final_neighbors, "dummy")
   end
 
