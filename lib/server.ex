@@ -8,8 +8,9 @@ defmodule Server do
     def handle_cast({:receive_message, rumour}, state) do
         {:ok, count} = Map.fetch(state, "count")
         state = Map.put(state, "count", count + 1)
+        {:ok, existing_rumour} = Map.fetch(state, "rumour")
 
-        if(rumour != "" && Map.fetch(state, "rumour") == rumour) do
+        if(existing_rumour != "") do
             {:noreply, state}
         else
             [{_, spread}] = :ets.lookup(:count, "spread")
@@ -20,6 +21,7 @@ defmodule Server do
 
     def handle_cast({:send_message, actors}, state) do
         {:ok, rumour} = Map.fetch(state, "rumour")
+       
         if (rumour != "") do
             _ = GenServer.cast(Enum.random(actors), {:receive_message, rumour})
         end

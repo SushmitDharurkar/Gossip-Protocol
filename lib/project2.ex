@@ -3,7 +3,7 @@ defmodule Project2 do
   def main(args \\ []) do
 
     {_, input, _} = OptionParser.parse(args)
-    IO.inspect input
+    # IO.inspect input
     numNodes = 0
 
     if length(input) == 3 do
@@ -32,16 +32,15 @@ defmodule Project2 do
 
     else
       IO.puts "Invalid input. Number of arguments should be 3"
-      IO.puts "Example: ./project2 30 3D gossip"
+      IO.puts "Example: ./project2 30 2D gossip"
     end
   end
 
   def init_actors(numNodes) do
-
     middleNode = trunc(numNodes/2)
-    Enum.map(1..numNodes, fn x ->  case x do
-                                      middleNode -> {:ok, actor} = Client.start_link("This is rumour")
-                                      _ -> {:ok, actor} = Client.start_link("")
+    Enum.map(1..numNodes, fn x -> cond  do
+                                      x == middleNode -> {:ok, actor} = Client.start_link("This is rumour")
+                                      true -> {:ok, actor} = Client.start_link("")
                                    end 
                                    actor end)
   end
@@ -62,20 +61,21 @@ defmodule Project2 do
             prev = System.monotonic_time(:milliseconds)
             IO.inspect init_gossip_2d(actors, neighbors, numNodes), label: "Rumour reached to"
       "line" -> 
-              IO.puts "Using line topology"
-              neighbors = get_line_neighbors(actors)  # Gives map of host, neighbors 
-              prev = System.monotonic_time(:milliseconds)
-              IO.inspect init_gossip_line(actors, neighbors, numNodes), label: "Rumour reached to"
+            IO.puts "Using line topology"
+            neighbors = get_line_neighbors(actors)  # Gives map of host, neighbors 
+            prev = System.monotonic_time(:milliseconds)
+            IO.inspect init_gossip_line(actors, neighbors, numNodes), label: "Rumour reached to"
               
       "imp2D" ->
-              IO.puts "Using imp2D topology"  
-              neighbors = get_2d_neighbors(actors, topology) 
-              prev = System.monotonic_time(:milliseconds)
-              init_gossip_imp2d(actors, neighbors, numNodes)           
+            IO.puts "Using imp2D topology"  
+            neighbors = get_2d_neighbors(actors, topology) 
+            prev = System.monotonic_time(:milliseconds)
+            IO.inspect init_gossip_imp2d(actors, neighbors, numNodes), label: "Rumour reached to"           
        _ ->
-         IO.puts "Invalid topology"   
-         IO.puts "Enter full/2D/line/imp2D"
+            IO.puts "Invalid topology"   
+            IO.puts "Enter full/2D/line/imp2D"
     end
+
     IO.puts "Time required " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
   end
 
@@ -96,20 +96,20 @@ defmodule Project2 do
     actors = check_actors_alive(actors)  
     [{_, spread}] = :ets.lookup(:count, "spread")
     
-    if ((spread/numNodes) < 0.9) do
-      neighbors = Enum.filter(neighbors, fn ({k,_}) -> Enum.member?(actors, k) end) 
+    if ((spread/numNodes) < 0.9 && length(actors) > 1) do
+      neighbors = Enum.filter(neighbors, fn {k,_} -> Enum.member?(actors, k) end) 
       spread = init_gossip_line(actors, neighbors, numNodes)
     end
     spread
   end
 
   def init_gossip_full(actors ,numNodes) do
-    Enum.each(actors, fn x -> Client.send_message(x, Enum.filter(actors, fn y -> y!=x end)) end)
-    actors = check_actors_alive(actors)
-    
+
+    Enum.each(actors, fn x -> Client.send_message(x, List.delete(actors, x)) end)
+    actors = check_actors_alive(actors)    
     [{_, spread}] = :ets.lookup(:count, "spread")
 
-    if ((spread/numNodes) < 0.9) do
+    if ((spread/numNodes) < 0.9 && length(actors) > 1) do
       spread = init_gossip_full(actors, numNodes)
     end
     spread
@@ -184,4 +184,5 @@ defmodule Project2 do
                                IO.puts to_string(Client.get_rumour(x)) <> " Count: " <>to_string(Client.get_count(x)) 
                               end)
   end
+
 end

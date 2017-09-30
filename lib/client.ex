@@ -6,6 +6,7 @@ defmodule Client do
     end
 
     def send_message(server, actors) do
+        # IO.inspect get_rumour(server)
         GenServer.cast(server, {:send_message, actors})
     end
 
