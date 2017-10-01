@@ -3,7 +3,6 @@ defmodule Project2 do
   def main(args \\ []) do
 
     {_, input, _} = OptionParser.parse(args)
-    # IO.inspect input
     numNodes = 0
 
     if length(input) == 3 do
@@ -39,8 +38,8 @@ defmodule Project2 do
   def init_actors(numNodes) do
     middleNode = trunc(numNodes/2)
     Enum.map(1..numNodes, fn x -> cond  do
-                                      x == middleNode -> {:ok, actor} = Client.start_link("This is rumour")
-                                      true -> {:ok, actor} = Client.start_link("")
+                                      x == middleNode -> {:ok, actor} = ReliableClient.start_link("This is rumour")
+                                      true -> {:ok, actor} = ReliableClient.start_link("")
                                    end 
                                    actor end)
   end
@@ -49,74 +48,56 @@ defmodule Project2 do
 
     :ets.new(:count, [:set, :public, :named_table])
     :ets.insert(:count, {"spread", 0})
+    :ets.insert(:count, {"failure", 0})
+    :ets.insert(:count, {"failed", MapSet.new([])})
+    neighbors = %{}
 
     case topology do
       "full" -> 
             IO.puts "Using full topology"
-            prev = System.monotonic_time(:milliseconds)
-            IO.inspect init_gossip_full(actors, numNodes), label: "Rumour reached to"
+            neighbors = get_full_neighbors(actors)
       "2D" ->
             IO.puts "Using 2D topology"
             neighbors = get_2d_neighbors(actors, topology)
-            prev = System.monotonic_time(:milliseconds)
-            IO.inspect init_gossip_2d(actors, neighbors, numNodes), label: "Rumour reached to"
       "line" -> 
             IO.puts "Using line topology"
             neighbors = get_line_neighbors(actors)  # Gives map of host, neighbors 
-            prev = System.monotonic_time(:milliseconds)
-            IO.inspect init_gossip_line(actors, neighbors, numNodes), label: "Rumour reached to"
-              
       "imp2D" ->
             IO.puts "Using imp2D topology"  
-            neighbors = get_2d_neighbors(actors, topology) 
-            prev = System.monotonic_time(:milliseconds)
-            IO.inspect init_gossip_imp2d(actors, neighbors, numNodes), label: "Rumour reached to"           
+            neighbors = get_2d_neighbors(actors, topology)      
        _ ->
             IO.puts "Invalid topology"   
             IO.puts "Enter full/2D/line/imp2D"
     end
 
+    set_neighbors(neighbors)
+    prev = System.monotonic_time(:milliseconds)
+    IO.inspect gossip(actors, neighbors, numNodes), label: "Rumour reached to"
+
     IO.puts "Time required " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
+    [{_, failures}] = :ets.lookup(:count, "failed")
+    IO.puts "Failure " <> to_string(MapSet.size(failures))
   end
 
-  def init_gossip_2d(actors, neighbors, numNodes) do
-    init_gossip_line(actors, neighbors, numNodes)
-  end
-
-  def init_gossip_imp2d(actors, neighbors, numNodes) do
-    init_gossip_line(actors, neighbors, numNodes)
-  end
-
-  def init_gossip_line(actors, neighbors, numNodes) do
+  def gossip(actors, neighbors, numNodes) do
 
     for  {k, v}  <-  neighbors  do
-      Client.send_message(k, v)
+      ReliableClient.send_message(k)
     end
 
     actors = check_actors_alive(actors)  
     [{_, spread}] = :ets.lookup(:count, "spread")
-    
+    [{_, failures}] = :ets.lookup(:count, "failure")
+
     if ((spread/numNodes) < 0.9 && length(actors) > 1) do
       neighbors = Enum.filter(neighbors, fn {k,_} -> Enum.member?(actors, k) end) 
-      spread = init_gossip_line(actors, neighbors, numNodes)
-    end
-    spread
-  end
-
-  def init_gossip_full(actors ,numNodes) do
-
-    Enum.each(actors, fn x -> Client.send_message(x, List.delete(actors, x)) end)
-    actors = check_actors_alive(actors)    
-    [{_, spread}] = :ets.lookup(:count, "spread")
-
-    if ((spread/numNodes) < 0.9 && length(actors) > 1) do
-      spread = init_gossip_full(actors, numNodes)
+      spread = gossip(actors, neighbors, numNodes)
     end
     spread
   end
 
   def check_actors_alive(actors) do
-    current_actors = Enum.map(actors, fn x -> if(Process.alive?(x) && Client.get_count(x) < 10) do x end end) 
+    current_actors = Enum.map(actors, fn x -> if (Process.alive?(x) && ReliableClient.get_count(x) < 10) do x end end) 
     List.delete(Enum.uniq(current_actors), nil)
   end
 
@@ -179,9 +160,15 @@ defmodule Project2 do
     Map.delete(final_neighbors, "dummy")
   end
 
+  def set_neighbors(neighbors) do
+    for  {k, v}  <-  neighbors  do
+      ReliableClient.set_neighbors(k, v)
+    end
+  end
+
   def print_rumour_count(actors) do
      Enum.each(actors, fn x -> IO.inspect x 
-                               IO.puts to_string(Client.get_rumour(x)) <> " Count: " <>to_string(Client.get_count(x)) 
+                               IO.puts to_string(ReliableClient.get_rumour(x)) <> " Count: " <>to_string(ReliableClient.get_count(x)) 
                               end)
   end
 
