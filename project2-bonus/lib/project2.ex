@@ -144,7 +144,7 @@ defmodule Project2 do
 
                                                                 # Add random neighbor
                                                                 case topology do
-                                                                  "imp2D" -> adjacents = Enum.into([:rand.uniform(numNodes) - 1], adjacents) # :rand.uniform(n) gives random number: 1 <= x <= n
+                                                                  "imp2D" -> adjacents = Enum.into(get_random_node_imp2D(adjacents, numNodes), adjacents) # :rand.uniform(n) gives random number: 1 <= x <= n
                                                                   _ ->
                                                                 end
 
@@ -164,6 +164,14 @@ defmodule Project2 do
     for  {k, v}  <-  neighbors  do
       ReliableClient.set_neighbors(k, v)
     end
+  end
+
+  def get_random_node_imp2D(neighbors, numNodes) do
+    random_node_index =  :rand.uniform(numNodes) - 1
+    if(Enum.member?(neighbors, random_node_index)) do
+      get_random_node_imp2D(neighbors, numNodes)
+    end
+    [random_node_index]
   end
 
   def print_rumour_count(actors) do
