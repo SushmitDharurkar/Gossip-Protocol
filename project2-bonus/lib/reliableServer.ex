@@ -61,4 +61,8 @@ defmodule ReliableServer do
     def handle_call({:get_rumour, rumour}, _from, state) do
         {:reply, Map.fetch(state, rumour), state}
     end
+
+    def handle_call({:get_neighbors}, _from, state) do
+        {:reply, Map.fetch(state, "neighbors"), state}
+    end
 end
