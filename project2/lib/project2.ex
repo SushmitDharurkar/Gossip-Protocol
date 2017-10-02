@@ -92,7 +92,7 @@ defmodule Project2 do
   end
 
   def check_actors_alive(actors) do
-    current_actors = Enum.map(actors, fn x -> if (Process.alive?(x) && Client.get_count(x) < 10) do x end end) 
+    current_actors = Enum.map(actors, fn x -> if (Process.alive?(x) && Client.get_count(x) < 10  && Client.has_neighbors(x)) do x end end) 
     List.delete(Enum.uniq(current_actors), nil)
   end
 

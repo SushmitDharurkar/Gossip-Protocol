@@ -22,4 +22,9 @@ defmodule Client do
         {:ok, rumour} = GenServer.call(server, {:get_rumour, "rumour"})
         rumour
     end
+
+    def has_neighbors(server) do
+        {:ok, neighbors} = GenServer.call(server, {:get_neighbors})
+        length(neighbors) > 0
+    end
 end
