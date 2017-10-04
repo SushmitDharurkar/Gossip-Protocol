@@ -5,12 +5,14 @@ defmodule Project2 do
     {_, input, _} = OptionParser.parse(args)
     numNodes = 0
 
-    if length(input) == 3 do
+    if length(input) == 4 do
 
       numNodes = String.to_integer(List.first(input))      
 
       if numNodes > 1 do
 
+        failNodes = trunc(String.to_integer(List.last(input)) * numNodes * 0.01)
+        input = List.delete_at(input, 3)
         algorithm = List.last(input)
         {topology, _} = List.pop_at(input, 1)
   
@@ -19,7 +21,7 @@ defmodule Project2 do
           "gossip" -> 
                 IO.puts "Using Gossip algorithm"
                 actors = init_actors(numNodes)
-                init_gossip(actors, topology, numNodes)
+                init_gossip(actors, topology, numNodes, failNodes)
   
           "push-sum" ->
                 IO.puts "Using push-sum algorithm"
@@ -38,17 +40,17 @@ defmodule Project2 do
   def init_actors(numNodes) do
     middleNode = trunc(numNodes/2)
     Enum.map(1..numNodes, fn x -> cond  do
-                                      x == middleNode -> {:ok, actor} = ReliableClient.start_link("This is rumour")
-                                      true -> {:ok, actor} = ReliableClient.start_link("")
+                                      x == middleNode -> {:ok, actor} = Client.start_link("This is rumour")
+                                      true -> {:ok, actor} = Client.start_link("")
                                    end 
                                    actor end)
   end
 
-  def init_gossip(actors, topology, numNodes) do
+  def init_gossip(actors, topology, numNodes, failNodes) do
 
     :ets.new(:count, [:set, :public, :named_table])
     :ets.insert(:count, {"spread", 0})
-    :ets.insert(:count, {"failure", 0})
+    :ets.insert(:count, {"timeout", false})
     :ets.insert(:count, {"failed", MapSet.new([])})
     neighbors = %{}
 
@@ -71,33 +73,44 @@ defmodule Project2 do
     end
 
     set_neighbors(neighbors)
-    prev = System.monotonic_time(:milliseconds)
-    IO.inspect gossip(actors, neighbors, numNodes), label: "Rumour reached to"
+    # prev = System.monotonic_time(:milliseconds)
 
-    IO.puts "Time required " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
+    remove_some_actors(actors, failNodes)
+    spawn(__MODULE__, :set_timer, [])
+    gossip(actors, neighbors, numNodes, failNodes)
+
+    # IO.puts "Time required " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
     [{_, failures}] = :ets.lookup(:count, "failed")
-    IO.puts "Failure " <> to_string(MapSet.size(failures))
+    IO.puts "Failed Nodes: " <> to_string(MapSet.size(failures))
   end
 
-  def gossip(actors, neighbors, numNodes) do
+  def gossip(actors, neighbors, numNodes, failNodes) do
 
-    for  {k, v}  <-  neighbors  do
-      ReliableClient.send_message(k)
-    end
-
-    actors = check_actors_alive(actors)  
-    [{_, spread}] = :ets.lookup(:count, "spread")
+    [{_, timeout}] = :ets.lookup(:count, "timeout")
+    # IO.puts "timeout is " <> to_string(timeout)
     
-
-    if ((spread/numNodes) < 0.9 && length(actors) > 1) do
-      neighbors = Enum.filter(neighbors, fn {k,_} -> Enum.member?(actors, k) end) 
-      spread = gossip(actors, neighbors, numNodes)
+    if(timeout) do
+      [{_, spread}] = :ets.lookup(:count, "spread")
+      IO.inspect "Spread is " <> to_string(spread * 100/numNodes) <> " %"
+    else
+      for  {k, _}  <-  neighbors  do
+        Client.send_message(k)
+      end
+  
+      actors = check_actors_alive(actors)  
+  
+      if (length(actors) > 1 ) do
+        neighbors = Enum.filter(neighbors, fn {k,_} -> Enum.member?(actors, k) end) 
+        gossip(actors, neighbors, numNodes, failNodes) 
+      else
+        [{_, spread}] = :ets.lookup(:count, "spread")
+        IO.inspect "Spread is " <> to_string(spread * 100/numNodes) <> " %"
+      end
     end
-    spread
   end
 
   def check_actors_alive(actors) do
-    current_actors = Enum.map(actors, fn x -> if (Process.alive?(x) && ReliableClient.get_count(x) < 10) && ReliableClient.has_neighbors(x) do x end end) 
+    current_actors = Enum.map(actors, fn x -> if (Process.alive?(x) && Client.get_count(x) < 10  && Client.has_neighbors(x)) do x end end) 
     List.delete(Enum.uniq(current_actors), nil)
   end
 
@@ -122,7 +135,6 @@ defmodule Project2 do
   def get_2d_neighbors(actors, topology) do
 
     actors_with_index = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({v,k}, acc) -> Map.put(acc, k, v) end)
-    neighbors = %{}
     numNodes = length(actors)
     xMax = trunc(:math.ceil(:math.sqrt(numNodes)))
     yMax = xMax
@@ -162,7 +174,7 @@ defmodule Project2 do
 
   def set_neighbors(neighbors) do
     for  {k, v}  <-  neighbors  do
-      ReliableClient.set_neighbors(k, v)
+      Client.set_neighbors(k, v)
     end
   end
 
@@ -176,8 +188,29 @@ defmodule Project2 do
 
   def print_rumour_count(actors) do
      Enum.each(actors, fn x -> IO.inspect x 
-                               IO.puts to_string(ReliableClient.get_rumour(x)) <> " Count: " <>to_string(ReliableClient.get_count(x)) 
+                               IO.puts to_string(Client.get_rumour(x)) <> " Count: " <>to_string(Client.get_count(x)) 
                               end)
+  end
+
+  def set_timer() do
+    :timer.sleep(5000)
+    :ets.insert(:count, {"timeout", true})
+  end
+
+  def remove_some_actors(actors, noofFailNodes) do 
+
+    Enum.each(Enum.take_random(actors, noofFailNodes), fn x -> [{_ , failed}] = :ets.lookup(:count, "failed")
+                                                      :ets.insert(:count, {"failed", MapSet.put(failed, x)} ) end)
+    """                                                  
+    :timer.sleep(1000)
+    start_some_nodes = trunc(noofFailNodes * 0.9)
+
+    [{_ , failed_nodes}] = :ets.lookup(:count, "failed")
+    Enum.each(Enum.take_random(MapSet.to_list(failed_nodes), start_some_nodes), fn x ->  [{_ , failed}] = :ets.lookup(:count, "failed") 
+                                                                            :ets.insert(:count, {"failed", MapSet.delete(failed, x)} ) end)
+    [{ _, failed}] = :ets.lookup(:count, "failed")     
+    # IO.inspect  "Failed nodes " <> to_string(length(MapSet.to_list(failed))) 
+    """                                            
   end
 
 end

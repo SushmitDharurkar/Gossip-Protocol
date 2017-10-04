@@ -1,25 +1,20 @@
-defmodule ReliableClient do
+defmodule Client do
     use GenServer
 
     def start_link(rumour) do
-        GenServer.start_link(ReliableServer, rumour)
+        GenServer.start_link(Server, rumour)
     end
 
     def send_message(server) do
         GenServer.cast(server, {:send_message})
     end
 
-    def receive_message(server, rumour) do
-        GenServer.cast(server, {:receive_message, rumour})
-    end
-
     def set_neighbors(server, neighbors) do
         GenServer.cast(server, {:set_neighbors, neighbors})
     end
 
-    def has_neighbors(server) do
-        {:ok, neighbors} = GenServer.call(server, {:get_neighbors})
-        length(neighbors) > 0
+    def make_inactive(server) do
+        GenServer.call(server, {:make_inactive})
     end
 
     def get_count(server) do

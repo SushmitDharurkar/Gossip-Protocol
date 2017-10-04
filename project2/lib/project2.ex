@@ -70,13 +70,12 @@ defmodule Project2 do
 
     set_neighbors(neighbors)
     prev = System.monotonic_time(:milliseconds)
-    IO.inspect gossip(actors, neighbors, numNodes), label: "Rumour reached to"
-
+    gossip(actors, neighbors, numNodes)
     IO.puts "Time required " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
   end
 
   def gossip(actors, neighbors, numNodes) do
-
+    
     for  {k, v}  <-  neighbors  do
       Client.send_message(k)
     end
@@ -86,9 +85,10 @@ defmodule Project2 do
 
     if ((spread/numNodes) < 0.9 && length(actors) > 1) do
       neighbors = Enum.filter(neighbors, fn {k,_} -> Enum.member?(actors, k) end) 
-      spread = gossip(actors, neighbors, numNodes)
+      gossip(actors, neighbors, numNodes)
+    else
+      IO.puts "Spread is " <> to_string(spread * 100/numNodes) <> " %"
     end
-    spread
   end
 
   def check_actors_alive(actors) do
@@ -155,18 +155,18 @@ defmodule Project2 do
     Map.delete(final_neighbors, "dummy")
   end
 
+  def set_neighbors(neighbors) do
+    for  {k, v}  <-  neighbors  do
+      Client.set_neighbors(k, v)
+    end
+  end
+
   def get_random_node_imp2D(neighbors, numNodes) do
     random_node_index =  :rand.uniform(numNodes) - 1
     if(Enum.member?(neighbors, random_node_index)) do
       get_random_node_imp2D(neighbors, numNodes)
     end
     [random_node_index]
-  end
-
-  def set_neighbors(neighbors) do
-    for  {k, v}  <-  neighbors  do
-      Client.set_neighbors(k, v)
-    end
   end
 
   def print_rumour_count(actors) do

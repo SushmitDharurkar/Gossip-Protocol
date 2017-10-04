@@ -34,3 +34,15 @@ echo ""
 echo ""
 ./project2 800 full gossip
 echo ""
+
+echo ""
+echo "Nodes 1000 "
+echo ""
+./project2 1000 line gossip
+echo ""
+./project2 1000 2D gossip
+echo ""
+./project2 1000 imp2D gossip
+echo ""
+./project2 1000 full gossip
+echo ""
