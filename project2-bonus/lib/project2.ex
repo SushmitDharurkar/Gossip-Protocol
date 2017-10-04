@@ -33,7 +33,7 @@ defmodule Project2 do
 
     else
       IO.puts "Invalid input. Number of arguments should be 3"
-      IO.puts "Example: ./project2 30 2D gossip"
+      IO.puts "Example: ./project2 30 2D gossip 10"
     end
   end
 
