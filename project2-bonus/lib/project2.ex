@@ -201,7 +201,8 @@ defmodule Project2 do
 
     Enum.each(Enum.take_random(actors, noofFailNodes), fn x -> [{_ , failed}] = :ets.lookup(:count, "failed")
                                                       :ets.insert(:count, {"failed", MapSet.put(failed, x)} ) end)
-    """                                                  
+    """  
+    # Start some actors which will improve the spread                                                
     :timer.sleep(1000)
     start_some_nodes = trunc(noofFailNodes * 0.9)
 

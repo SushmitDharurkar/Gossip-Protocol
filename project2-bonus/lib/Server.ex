@@ -72,7 +72,6 @@ defmodule Server do
     end
 
     def handle_cast({:remove_neighbor, neighbor},  state) do
-        # IO.inspect neighbor, label: "Removing neighbor"
         {:ok, neighbors} = Map.fetch(state, "neighbors")
         updated_neighbors = List.delete(neighbors, neighbor)
         state = Map.put(state, "neighbors_backup", updated_neighbors)
