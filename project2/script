@@ -2,17 +2,31 @@ mix escript.build
 
 echo "Nodes 100 "
 echo ""
+./project2 100 full gossip
+echo ""
 ./project2 100 line gossip
 echo ""
 ./project2 100 2D gossip
 echo ""
 ./project2 100 imp2D gossip
 echo ""
-./project2 100 full gossip
+
+echo "Nodes 300 "
 echo ""
+./project2 300 full gossip
+echo ""
+./project2 300 line gossip
+echo ""
+./project2 300 2D gossip
+echo ""
+./project2 300 imp2D gossip
+echo ""
+
 
 echo ""
 echo "Nodes 500 "
+echo ""
+./project2 500 full gossip
 echo ""
 ./project2 500 line gossip
 echo ""
@@ -20,11 +34,12 @@ echo ""
 echo ""
 ./project2 500 imp2D gossip
 echo ""
-./project2 500 full gossip
-echo ""
+
 
 echo ""
 echo "Nodes 800 "
+echo ""
+./project2 800 full gossip
 echo ""
 ./project2 800 line gossip
 echo ""
@@ -32,17 +47,16 @@ echo ""
 echo ""
 ./project2 800 imp2D gossip
 echo ""
-./project2 800 full gossip
-echo ""
+
 
 echo ""
 echo "Nodes 1000 "
+echo ""
+./project2 1000 full gossip
 echo ""
 ./project2 1000 line gossip
 echo ""
 ./project2 1000 2D gossip
 echo ""
 ./project2 1000 imp2D gossip
-echo ""
-./project2 1000 full gossip
 echo ""

@@ -1,0 +1,312 @@
+Nodes 100
+
+Using Gossip algorithm
+Using full topology
+"Spread is 97.0 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using full topology
+"Spread is 88.0 %"
+Failed Nodes: 10
+
+Using Gossip algorithm
+Using full topology
+"Spread is 80.0 %"
+Failed Nodes: 20
+
+Using Gossip algorithm
+Using line topology
+"Spread is 98.0 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using line topology
+"Spread is 6.0 %"
+Failed Nodes: 10
+
+Using Gossip algorithm
+Using line topology
+"Spread is 10.0 %"
+Failed Nodes: 20
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 98.0 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 89.0 %"
+Failed Nodes: 10
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 78.0 %"
+Failed Nodes: 20
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 98.0 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 88.0 %"
+Failed Nodes: 10
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 79.0 %"
+Failed Nodes: 20
+
+Nodes 300
+
+Using Gossip algorithm
+Using full topology
+"Spread is 99.66666666666667 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using full topology
+"Spread is 88.66666666666667 %"
+Failed Nodes: 30
+
+Using Gossip algorithm
+Using full topology
+"Spread is 79.33333333333333 %"
+Failed Nodes: 60
+
+Using Gossip algorithm
+Using line topology
+"Spread is 99.66666666666667 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using line topology
+"Spread is 8.333333333333334 %"
+Failed Nodes: 30
+
+Using Gossip algorithm
+Using line topology
+"Spread is 3.6666666666666665 %"
+Failed Nodes: 60
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 98.66666666666667 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 89.33333333333333 %"
+Failed Nodes: 30
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 78.33333333333333 %"
+Failed Nodes: 60
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 98.0 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 85.66666666666667 %"
+Failed Nodes: 30
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 77.33333333333333 %"
+Failed Nodes: 60
+
+
+Nodes 500
+
+Using Gossip algorithm
+Using full topology
+"Spread is 98.2 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using full topology
+"Spread is 89.6 %"
+Failed Nodes: 50
+
+Using Gossip algorithm
+Using full topology
+"Spread is 79.6 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using line topology
+"Spread is 99.8 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using line topology
+"Spread is 3.8 %"
+Failed Nodes: 50
+
+Using Gossip algorithm
+Using line topology
+"Spread is 2.8 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 99.4 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 88.6 %"
+Failed Nodes: 50
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 78.6 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 97.6 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 88.8 %"
+Failed Nodes: 50
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 76.4 %"
+Failed Nodes: 100
+
+
+Nodes 800
+
+Using Gossip algorithm
+Using full topology
+"Spread is 99.625 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using full topology
+"Spread is 89.625 %"
+Failed Nodes: 80
+
+Using Gossip algorithm
+Using full topology
+"Spread is 79.125 %"
+Failed Nodes: 160
+
+Using Gossip algorithm
+Using line topology
+"Spread is 99.875 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using line topology
+"Spread is 1.125 %"
+Failed Nodes: 80
+
+Using Gossip algorithm
+Using line topology
+"Spread is 1.0 %"
+Failed Nodes: 160
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 99.25 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 89.25 %"
+Failed Nodes: 80
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 79.5 %"
+Failed Nodes: 160
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 97.75 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 88.5 %"
+Failed Nodes: 80
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 79.25 %"
+Failed Nodes: 160
+
+
+Nodes 1000
+
+Using Gossip algorithm
+Using full topology
+"Spread is 99.3 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using full topology
+"Spread is 88.1 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using full topology
+"Spread is 79.7 %"
+Failed Nodes: 200
+
+Using Gossip algorithm
+Using line topology
+"Spread is 56.8 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using line topology
+"Spread is 0.7 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using line topology
+"Spread is 0.2 %"
+Failed Nodes: 200
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 99.5 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 89.3 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using 2D topology
+"Spread is 78.6 %"
+Failed Nodes: 200
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 98.1 %"
+Failed Nodes: 0
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 88.9 %"
+Failed Nodes: 100
+
+Using Gossip algorithm
+Using imp2D topology
+"Spread is 77.4 %"
+Failed Nodes: 200

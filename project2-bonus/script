@@ -27,6 +27,33 @@ echo ""
 ./project2 100 imp2D gossip 20
 echo ""
 
+echo "Nodes 300 "
+echo ""
+./project2 300 full gossip 0
+echo ""
+./project2 300 full gossip 10
+echo ""
+./project2 300 full gossip 20
+echo ""
+./project2 300 line gossip 0 
+echo ""
+./project2 300 line gossip 10 
+echo ""
+./project2 300 line gossip 20
+echo ""
+./project2 300 2D gossip 0
+echo ""
+./project2 300 2D gossip 10
+echo ""
+./project2 300 2D gossip 20
+echo ""
+./project2 300 imp2D gossip 0
+echo ""
+./project2 300 imp2D gossip 10
+echo ""
+./project2 300 imp2D gossip 20
+echo ""
+
 
 echo ""
 echo "Nodes 500 "

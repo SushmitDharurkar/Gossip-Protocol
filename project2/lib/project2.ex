@@ -71,7 +71,7 @@ defmodule Project2 do
     set_neighbors(neighbors)
     prev = System.monotonic_time(:milliseconds)
     gossip(actors, neighbors, numNodes)
-    IO.puts "Time required " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
+    IO.puts "Time required: " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
   end
 
   def gossip(actors, neighbors, numNodes) do
@@ -87,7 +87,7 @@ defmodule Project2 do
       neighbors = Enum.filter(neighbors, fn {k,_} -> Enum.member?(actors, k) end) 
       gossip(actors, neighbors, numNodes)
     else
-      IO.puts "Spread is " <> to_string(spread * 100/numNodes) <> " %"
+      IO.puts "Spread: " <> to_string(spread * 100/numNodes) <> " %"
     end
   end
 
