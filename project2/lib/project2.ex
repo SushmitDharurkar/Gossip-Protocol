@@ -19,10 +19,12 @@ defmodule Project2 do
           "gossip" -> 
                 IO.puts "Using Gossip algorithm"
                 actors = init_actors(numNodes)
-                init_gossip(actors, topology, numNodes)
+                init_algorithm(actors, topology, numNodes, algorithm)
   
           "push-sum" ->
                 IO.puts "Using push-sum algorithm"
+                actors = init_actors_push_sum(numNodes)
+                init_algorithm(actors, topology, numNodes, algorithm)
            _ ->
              IO.puts "Invalid algorithm"   
              IO.puts "Enter gossip or push-sum"
@@ -44,7 +46,27 @@ defmodule Project2 do
                                    actor end)
   end
 
-  def init_gossip(actors, topology, numNodes) do
+  def init_actors_push_sum(numNodes) do
+    middleNode = trunc(numNodes/2)
+    Enum.map(1..numNodes,
+      fn x ->
+        cond do
+          x == middleNode ->
+            x = Integer.to_string(x)
+            {x, _} = Float.parse(x)
+            #Client.start_link returns the pid of the process
+            {:ok, actor} = Client.start_link([x] ++ ["This is rumour"])
+          true ->
+            x = Integer.to_string(x)
+            {x, _} = Float.parse(x)
+            #Client.start_link returns the pid of the process
+            {:ok, actor} = Client.start_link([x] ++ [""])
+        end
+      actor
+      end)
+  end
+
+  def init_algorithm(actors, topology, numNodes, algorithm) do
 
     :ets.new(:count, [:set, :public, :named_table])
     :ets.insert(:count, {"spread", 0})
@@ -70,7 +92,12 @@ defmodule Project2 do
 
     set_neighbors(neighbors)
     prev = System.monotonic_time(:milliseconds)
-    gossip(actors, neighbors, numNodes)
+
+    if (algorithm == "gossip") do
+      gossip(actors, neighbors, numNodes)
+    else
+      push_sum(actors, neighbors, numNodes)
+    end
     IO.puts "Time required: " <> to_string(System.monotonic_time(:milliseconds) - prev) <> " ms"
   end
 
@@ -91,8 +118,52 @@ defmodule Project2 do
     end
   end
 
+   def push_sum(actors, neighbors, numNodes) do
+    for  {k, v}  <-  neighbors  do
+      Client.send_message_push_sum(k)
+    end
+
+    actors = check_actors_alive_push_sum(actors)
+    [{_, spread}] = :ets.lookup(:count, "spread")
+
+    if ((spread/numNodes) < 0.9 && length(actors) > 1) do
+      neighbors = Enum.filter(neighbors, fn ({k,_}) -> Enum.member?(actors, k) end)
+      [{_, spread}] = :ets.lookup(:count, "spread")
+      push_sum(actors, neighbors, numNodes)
+    else
+      IO.puts "Spread: " <> to_string(spread * 100/numNodes) <> " %"
+    end
+  end
+
   def check_actors_alive(actors) do
     current_actors = Enum.map(actors, fn x -> if (Process.alive?(x) && Client.get_count(x) < 10  && Client.has_neighbors(x)) do x end end) 
+    List.delete(Enum.uniq(current_actors), nil)
+  end
+
+
+  def push_sum(actors, neighbors, numNodes) do
+    for  {k, v}  <-  neighbors  do
+      Client.send_message_push_sum(k)
+    end
+
+    actors = check_actors_alive_push_sum(actors)
+    [{_, spread}] = :ets.lookup(:count, "spread")
+
+    if ((spread/numNodes) < 0.9 && length(actors) > 1) do
+      neighbors = Enum.filter(neighbors, fn ({k,_}) -> Enum.member?(actors, k) end)
+      push_sum(actors, neighbors, numNodes)
+    end
+  end
+
+  def check_actors_alive_push_sum(actors) do
+    current_actors = Enum.map(actors,
+        fn x ->
+          diff = Client.get_diff(x)
+          if(Process.alive?(x) && Client.has_neighbors(x) && (abs(List.first(diff)) > :math.pow(10, -10)
+                 || abs(List.last(diff)) > :math.pow(10, -10))) do
+             x
+          end
+        end)
     List.delete(Enum.uniq(current_actors), nil)
   end
 
