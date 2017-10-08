@@ -1,0 +1,56 @@
+	 	 	 	
+Distributed Operating Systems, Project 2: Gossip Protocol
+Date: October 7, 2017
+
+Group Members:
+1. Sanket Achari, UFID: 71096329, sanketachari@ufl.edu
+2. Sushmit Dharurkar, UFID: 14969578, sushmitdharurkar@ufl.edu
+
+	 	 	 	
+Instructions to RUN:
+
+1. Make sure epmd daemon is running. Run epmd -daemon
+2. Run following commands from the directory which has mix.exs
+	 mix escript.build
+ ./project2 numNodes {full | imp2D | line | 2D} {gossip | push-sum}
+
+Working: 
+
+1. Convergence of Gossip algorithm for all topologies.
+2. Convergence of Push-Sum algorithm for all topologies.
+
+Largest network used:
+
+1. For Gossip algorithm:
+a. Full Network Topology: 5,000
+b. Line Topology: 5,000
+c. 2D Grid Topology: 100,000
+d. Imperfect 2D Grid Topology: 100,000
+
+2. For Push-Sum algorithm:
+a. Full Network Topology: 5,000
+b. Line Topology: 5,000
+c. 2D Grid Topology: 100,000
+d. Imperfect 2D Grid Topology: 100,000
+
+Sample Outputs: 
+
+sushmit@sushmit-Lenovo-Y50-70:~/Fall 2017/Distributed Systems/Project2/gossip_simulator/
+project2$ ./project2 100 full gossip
+Using Gossip algorithm
+Using full topology
+Spread: 95.0 %
+Time required: 18 ms
+
+Spread is the ratio of nodes that received the rumour divided by the total number of nodes.
+Time required is the convergence time of the network.
+
+sushmit@sushmit-Lenovo-Y50-70:~/Fall 2017/Distributed Systems/Project2/gossip_simulator/
+project2$ ./project2 100 full push-sum
+Using push-sum algorithm
+Using full topology
+Spread: 93.0 %
+Time required: 20 ms
+
+
+
